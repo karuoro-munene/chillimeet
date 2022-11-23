@@ -1,0 +1,38 @@
+[
+  {
+    "model": "meetings.staff",
+    "pk": 1,
+    "fields": {
+      "username": "JohnLennon",
+      "names": "John Lennon",
+      "initials": "JL"
+    }
+  },
+  {
+    "model": "meetings.staff",
+    "pk": 2,
+    "fields": {
+      "username": "PaulMcCartney",
+      "names": "Paul McCartney",
+      "initials": "PM"
+    }
+  },
+  {
+    "model": "meetings.staff",
+    "pk": 3,
+    "fields": {
+      "username": "PeterWiles",
+      "names": "Peter Wiles",
+      "initials": "PW"
+    }
+  },
+  {
+    "model": "meetings.staff",
+    "pk": 4,
+    "fields": {
+      "username": "VarushkaSingh",
+      "names": "Varushka Singh",
+      "initials": "VS"
+    }
+  }
+]

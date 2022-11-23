@@ -1,17 +1,41 @@
 {%extends 'base.html'%}
 {%load static%}
+{%load humanize%}
 {%block content%}
 {%include 'navbar.html'%}
 <nav aria-label="breadcrumb">
     <div class="m-0 p-0" style="background-color:#white!important;">
-            <ol class="breadcrumb mx-auto container z-depth-0 " style="background:white!important;">
-                <li class="breadcrumb-item"><a href="{%url 'home'%}">Home</a></li>
-                <li class="breadcrumb-item active"><a >Staff</a></li>
-            </ol>
+        <ol class="breadcrumb mx-auto container z-depth-0 " style="background:white!important;">
+            <li class="breadcrumb-item"><a href="{%url 'home'%}">Home</a></li>
+            <li class="breadcrumb-item active"><a>Staff</a></li>
+        </ol>
     </div>
 </nav>
 <div class="container pt-5">
+    <div>
+        <h3><strong>Existing Staff</strong></h3>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col"><strong>#</strong></th>
+            <th scope="col"><strong>Names</strong></th>
+            <th scope="col"><strong>Initials</strong></th>
+            <th scope="col"><strong>Created On</strong></th>
+        </tr>
+        </thead>
+        <tbody>
+        {%for staff in all_staff%}
+        <tr>
+            <th scope="row">{{staff.id}}</th>
+            <td>{{staff.names}}</td>
+            <td>{{staff.initials}}</td>
+            <td>{{staff.created_on|naturalday}}</td>
+        </tr>
+        {%endfor%}
 
+        </tbody>
+    </table>
 </div>
 {%endblock content%}
 {%block scripts%}

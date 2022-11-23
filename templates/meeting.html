@@ -1,0 +1,167 @@
+{%extends 'base.html'%}
+{%load static%}
+{%load humanize%}
+{%block content%}
+{%include 'navbar.html'%}
+<nav aria-label="breadcrumb">
+    <div class="m-0 p-0" style="background-color:#white!important;">
+        <ol class="breadcrumb mx-auto container z-depth-0 " style="background:white!important;">
+            <li class="breadcrumb-item"><a href="{%url 'home'%}">Home</a></li>
+            <li class="breadcrumb-item "><a href="{%url 'meetings'%}">Meetings</a></li>
+            <li class="breadcrumb-item active"><a>{{meeting.meeting_number}}</a></li>
+        </ol>
+    </div>
+</nav>
+<div class="container pt-5">
+    <div>
+        <h5><strong>{{meeting.meeting_number}} Meeting</strong></h5>
+        <div class="p0">
+            <p class="p-0 m-0">{{meeting.meeting_type}} Meeting <span class="text-muted small"><i
+                    class="fa-solid fa-clock"></i>
+                Last updated {{meeting.updated_on|naturaltime}}</span></p>
+
+        </div>
+    </div>
+    <div>
+        <h3 class="text-right">
+            <button type="button" class="btn btn-primary rounded" data-toggle="modal"
+                    data-target="#new_meeting_item"><i
+                    class="fa-solid fa-plus"></i>Add New Meeting Item
+            </button>
+        </h3>
+    </div>
+    <h5>All Meeting Items</h5>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col"><strong>Item Number</strong></th>
+            <th scope="col"><strong>Item Description</strong></th>
+            <th scope="col"><strong>Due Date</strong></th>
+            <th scope="col"><strong>Person Responsible</strong></th>
+            <th scope="col"><strong>Edit Item</strong></th>
+            <th scope="col"><strong>Update Status</strong></th>
+            <th scope="col"><strong>View History</strong></th>
+        </tr>
+        </thead>
+        <tbody>
+        {%for item in meeting_items%}
+        <tr>
+            <th scope="row">{{item.count}}</th>
+            <td>{{item.name}}</td>
+            <td>{{item.due_date}}</td>
+            <td>{{item.person_responsible}}</td>
+            <td><span class="text-primary edit-item" data-id="{{item.id}}" style="cursor:pointer"><i
+                    class="fa-solid fa-pencil"></i> Edit Item</span></td>
+            <td><a href="{%url 'items' meeting.meeting_number item.id %}"><span class="text-primary"><i
+                    class="fa-solid fa-caret-up"></i> Update Status</span></a></td>
+            <td><a href="{%url 'history' meeting.meeting_number item.id %}"><span class="text-primary"><i
+                    class="fa-solid fa-reply"></i> View Item History</span></a></td>
+        </tr>
+        {%endfor%}
+
+        </tbody>
+    </table>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="new_meeting_item" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+
+    <!-- Add .modal-dialog-centered to .modal-dialog to vertically center the modal -->
+    <div class="modal-dialog modal-dialog-centered" role="document">
+
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle"><strong>Add New Meeting Item</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="modal-body py-4" method="post">
+                {%csrf_token%}
+                <label for="item">Description of Item</label>
+                <input id="item" name="item" class="form-control" required>
+
+                <div class="md-form pt-3">
+                    <input placeholder="click to select date" type="text" id="date-picker-example"
+                           class="form-control datepicker" name="date">
+                    <label for="date-picker-example">Select item due date</label>
+                </div>
+                <label class="pt-3" for="staff">Select Person Responsible</label>
+                <select class="browser-default custom-select" id="staff" name="staff" required>
+                    {%for staff in existing_staff%}
+                    <option value="{{staff.id}}">{{staff.names}}</option>
+                    {%endfor%}
+                </select>
+                <div class="pt-4">
+                    <button type="submit" class="btn btn-primary btn-sm float-right">Save</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="edit_item_modal" tabindex="-1" role="dialog"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><strong>Edit Item</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="modal-body py-4" method="post" id="edit-status-form">
+                {%csrf_token%}
+                <label for="edit_name">Enter Description</label>
+                <input id="edit_name" name="edit_name" class="form-control" required>
+                <label class="pt-3" for="staff">Select Responsible Person</label>
+                <select class="browser-default custom-select" id="edit_staff" name="edit_staff" required>
+                    {%for staff in existing_staff%}
+                    <option value="{{staff.names}}">{{staff.names}}</option>
+                    {%endfor%}
+                </select>
+                <div class="md-form pt-3">
+                    <input placeholder="click to edit date" type="text" id="date-picker-example2"
+                           class="form-control datepicker" name="edit_date">
+                    <label for="date-picker-example2">Select item due date</label>
+                </div>
+                <input id="edit_item_id" hidden name="edit_item_id" value="">
+                <div class="pt-3">
+                    <button type="submit" class="btn btn-primary btn-sm float-right">Save</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{%endblock content%}
+{%block scripts%}
+<script>
+    $('.datepicker').pickadate();
+
+</script>
+<script>
+    $( ".edit-item" ).click(function() {
+      var item_id = $(this).attr("data-id");
+      $.ajax({
+          url: "{%url 'get_item_details'%}",
+          data: {"item_id":item_id},
+          success: function (response) {
+                console.log(response);
+                $("#edit_name").val(response["name"]);
+                $("#edit_date").val(response["due date"]);
+                $("#edit_staff").val(response["staff"]).change();
+                $("#edit_item_id").val(response["id"]);
+                $('#edit_item_modal').modal('show');
+            }
+        });
+
+    });
+</script>
+{%endblock scripts%}

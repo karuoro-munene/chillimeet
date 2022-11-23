@@ -1,0 +1,37 @@
+{%extends 'base.html'%}
+{%load static%}
+{%load humanize%}
+{%block content%}
+{%include 'navbar.html'%}
+<nav aria-label="breadcrumb">
+    <div class="m-0 p-0" style="background-color:#white!important;">
+        <ol class="breadcrumb mx-auto container z-depth-0 " style="background:white!important;">
+            <li class="breadcrumb-item"><a href="{%url 'home'%}">Home</a></li>
+            <li class="breadcrumb-item "><a href="{%url 'meetings'%}">Meetings</a></li>
+            <li class="breadcrumb-item "><a
+                    href="{%url 'meeting' meeting.meeting_number%}">{{meeting.meeting_number}}</a></li>
+            <li class="breadcrumb-item active"><a>Item {{item.label}} History</a></li>
+        </ol>
+    </div>
+</nav>
+<div class="container pt-5">
+    <div>
+        <h5><strong>History for Item {{item.label}} of Meeting {{meeting.meeting_number}}</strong></h5>
+        <div class="p0">
+            <p class="p-0 m-0">{{meeting.meeting_type}} Meeting <span class="text-muted small"><i
+                    class="fa-solid fa-clock"></i>
+                Last updated {{meeting.updated_on|naturaltime}}</span></p>
+            <p class="p-0 m-0">Item {{item.label}} <span class="text-muted small"><i class="fa-solid fa-clock"></i>
+                Last updated {{item.updated_on|naturaltime}}</span></p>
+        </div>
+    </div>
+
+</div>
+
+
+{%endblock content%}
+{%block scripts%}
+
+
+
+{%endblock scripts%}

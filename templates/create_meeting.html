@@ -1,0 +1,135 @@
+{%extends 'base.html'%}
+{%load static%}
+{%load humanize%}
+{%block content%}
+{%include 'navbar.html'%}
+<nav aria-label="breadcrumb">
+    <div class="m-0 p-0" style="background-color:#white!important;">
+        <ol class="breadcrumb mx-auto container z-depth-0 " style="background:white!important;">
+            <li class="breadcrumb-item"><a href="{%url 'home'%}">Home</a></li>
+            <li class="breadcrumb-item "><a href="{%url 'meetings'%}">Meetings</a></li>
+            <li class="breadcrumb-item active"><a>New</a></li>
+        </ol>
+    </div>
+</nav>
+{%if previous_meeting%}
+<div class="container pt-5">
+    <div class="pb-4">
+        <h5><strong>Previous meeting was {{previous_meeting}}</strong></h5>
+        <div class="pt-1">
+            <p class="p-0 m-0">{{previous_meeting_obj.meeting_type}} Meeting <span class="text-muted small"><i
+                    class="fa-solid fa-clock"></i> Last updated {{previous_meeting_obj.updated_on|naturaltime}}</span></p>
+            {%if not blank_items%}
+            <p>Select items you would like to add to the new meeting.</p>
+            {%endif%}
+        </div>
+    </div>
+
+
+    {%if not blank_items %}
+    <h5>Previous Meeting Items</h5>
+    <form method="post">
+        {%csrf_token%}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col"><strong>Item Number</strong></th>
+                <th scope="col"><strong>Item Name</strong></th>
+                <th scope="col"><strong>Select this Item?</strong></th>
+            </tr>
+            </thead>
+            <tbody>
+            {%for item in meeting_items%}
+            <tr>
+                <th scope="row">{{item.count}}</th>
+                <td>{{item.name}}</td>
+                <td>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="{{item.id}}" value="{{item.id}}"
+                               name="item_{{item.id}}">
+                        <label class="custom-control-label" for="{{item.id}}"></label>
+                    </div>
+                </td>
+            </tr>
+            {%endfor%}
+
+            </tbody>
+        </table>
+        <!-- Default unchecked -->
+        <div>
+            <input name="create_previous" hidden>
+            <button type="submit" class="btn btn-primary rounded float-right"
+            ><i
+                    class="fa-solid fa-plus"></i> Create Meeting
+            </button>
+        </div>
+
+
+    </form>
+    {%else%}
+    <form method="post">
+        {%csrf_token%}
+        <p class="text-center">Since the previous meeting did not have any items, just create this meeting</p>
+        <h3 class="text-center pt-5">
+            <input name="create_blank" hidden>
+            <button type="submit" class="btn btn-primary rounded"
+            ><i
+                    class="fa-solid fa-plus"></i> Create Meeting
+            </button>
+        </h3>
+    </form>
+    {%endif%}
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="new_meeting_item" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+
+    <!-- Add .modal-dialog-centered to .modal-dialog to vertically center the modal -->
+    <div class="modal-dialog modal-dialog-centered" role="document">
+
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle"><strong>New Meeting Item</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="modal-body py-4" method="post">
+                {%csrf_token%}
+                <label for="item">Enter name of Item</label>
+                <input id="item" name="item" class="form-control" required>
+                <div class="pt-4">
+                    <button type="submit" class="btn btn-primary btn-sm float-right">Submit</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{%else%}
+<div class="container pt-5">
+    <div>
+        <h5><strong>No previous meeting of type {{meeting.meeting_type}}</strong></h5>
+        <p >Since there is no previous meeting, just create the first</p>
+
+    </div>
+    <form method="post">
+        {%csrf_token%}
+        <h3 class="text-center pt-5">
+            <input name="create_blank" hidden>
+            <button type="submit" class="btn btn-primary rounded"
+            ><i
+                    class="fa-solid fa-plus"></i> Create Meeting
+            </button>
+        </h3>
+    </form>
+
+
+</div>
+{%endif%}
+{%endblock content%}
+{%block scripts%}
+{%endblock scripts%}
