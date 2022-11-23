@@ -24,6 +24,54 @@
             <p class="p-0 m-0">Item {{item.label}} <span class="text-muted small"><i class="fa-solid fa-clock"></i>
                 Last updated {{item.updated_on|naturaltime}}</span></p>
         </div>
+
+    </div>
+    <div class="pt-5">
+        <table class="table table-borderless">
+            <thead>
+            <tr>
+                <th scope="col"><strong>Item Description</strong></th>
+                <th scope="col"><strong>Person Responsible</strong></th>
+                <th scope="col"><strong>Due Date</strong></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{item.name}}</td>
+                <td>{{item.person_responsible}}</td>
+                <td>{{item.due_date}}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p class="p-3 h6"><strong></strong></p>
+        <hr>
+        <table class="table table-borderless">
+            <thead>
+            <tr>
+                <th scope="col"><strong>Status Number</strong></th>
+                <th scope="col"><strong>Status</strong></th>
+                <th scope="col"><strong>Action</strong></th>
+                <th scope="col"><strong>Created On</strong></th>
+            </tr>
+            </thead>
+            <tbody>
+            {%if statuses%}
+            {%for status in statuses%}
+            <tr>
+                <td>{{status.count}}</td>
+                <td>{{status.status}}</td>
+                <td>{{status.action}}</td>
+                <td>{{status.created_on}}</td>
+            </tr>
+            {%endfor%}
+            {%else%}
+            <tr>
+                <td colspan="4" class="text-center">No statuses were recorded for this meeting item</td></tr>
+            {%endif%}
+            </tbody>
+        </table>
+
     </div>
 
 </div>
@@ -31,7 +79,6 @@
 
 {%endblock content%}
 {%block scripts%}
-
 
 
 {%endblock scripts%}

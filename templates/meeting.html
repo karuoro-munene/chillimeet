@@ -22,13 +22,16 @@
 
         </div>
     </div>
-    <div>
-        <h3 class="text-right">
-            <button type="button" class="btn btn-primary rounded" data-toggle="modal"
-                    data-target="#new_meeting_item"><i
-                    class="fa-solid fa-plus"></i>Add New Meeting Item
-            </button>
-        </h3>
+    <div class="d-flex justify-content-between py-3">
+        <button type="button" class="btn btn-outline-primary btn-rounded waves-effect waves-light float-left"
+                onclick='printDiv();'><i
+                class="fa-solid fa-print"></i> &nbsp;Print Meeting's Minutes
+        </button>
+        <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light float-right"
+                data-toggle="modal"
+                data-target="#new_meeting_item"><i
+                class="fa-solid fa-plus"></i> Add New Meeting Item
+        </button>
     </div>
     <h5>All Meeting Items</h5>
     <table class="table">
@@ -61,6 +64,37 @@
 
         </tbody>
     </table>
+
+    <div id='DivIdToPrint' style="display:none">
+        <table>
+            <tr>
+                <th>{{report.meeting.meeting_type}}&nbsp;({{report.meeting.meeting_number}}) &nbsp; -- &nbsp;{{report.meeting.meeting_date}}</th>
+            </tr>
+        </table>
+        <br>
+        <br>
+        <table>
+            <thead>
+            <tr>
+                <th><strong>Meeting Item</strong></th>
+                <th><strong>COMMENT</strong></th>
+                <th><strong>Status</strong></th>
+                <th><strong>Action By:</strong></th>
+            </tr>
+            </thead>
+            <tbody>
+            {%for item in report.meeting_items.all%}
+            <tr>
+                <td>{{item.name}}</td>
+                <td>{{item.comments}}</td>
+                <td>{{item.status}}</td>
+                <td>{{item.person_responsible}}</td>
+            </tr>
+            {%endfor%}
+            </tbody>
+        </table>
+    </div>
+
 
 </div>
 
@@ -145,6 +179,10 @@
 <script>
     $('.datepicker').pickadate();
 
+
+
+
+
 </script>
 <script>
     $( ".edit-item" ).click(function() {
@@ -163,5 +201,30 @@
         });
 
     });
+
+
+
+
+</script>
+<script>
+    function printDiv()
+{
+
+  var divToPrint=document.getElementById('DivIdToPrint');
+
+  var newWin=window.open('','Print-Window');
+
+  newWin.document.open();
+
+  newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
+
+  newWin.document.close();
+
+  setTimeout(function(){newWin.close();},10);
+
+}
+
+
+
 </script>
 {%endblock scripts%}

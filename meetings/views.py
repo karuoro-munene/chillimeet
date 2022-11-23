@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.utils import timezone
 from num2words import num2words
 
-from meetings.models import Staff, Meeting, MeetingItem, MeetingItemStatus
+from meetings.models import Staff, Meeting, MeetingItem, MeetingItemStatus, MeetingReport
 
 
 # Create your views here.
@@ -160,6 +160,34 @@ def meeting(request, meeting_number):
         meeting.updated_on = timezone.now()
         meeting.save()
         return HttpResponseRedirect(request.path_info)
+    try:
+        report = MeetingReport.objects.get(meeting=meeting)
+        for item in meeting_items:
+            statuses = MeetingItemStatus.objects.filter(meeting_item=item)
+            try:
+                latest_status = MeetingItemStatus.objects.filter(meeting_item=item).order_by("-created_on")[0]
+                item.status = latest_status.status
+                item.save()
+            except IndexError:
+                pass
+            if item not in report.meeting_items.all():
+                report.meeting_items.add(item)
+        report.save()
+    except ObjectDoesNotExist:
+        report = MeetingReport.objects.create(meeting=meeting)
+        for item in meeting_items:
+            statuses = MeetingItemStatus.objects.filter(meeting_item=item)
+            try:
+                latest_status = MeetingItemStatus.objects.filter(meeting_item=item).order_by("-created_on")[0]
+                item.status = latest_status.status
+                item.save()
+            except IndexError:
+                pass
+            for status in statuses:
+                item.comments = item.comments + " . " +status.action
+                item.save()
+            report.meeting_items.add(item)
+        report.save()
     return render(request, 'meeting.html', locals())
 
 
@@ -181,9 +209,13 @@ def items(request, meeting_number, id):
         meeting_item_status.label = (num2words((items_statuses.count()))).replace("-", " ").capitalize()
         meeting_item_status.save()
         item.updated_on = timezone.now()
+        item.status = meeting_item_status.status
+        item.comments = item.comments + "                                  " + meeting_item_status.action
         item.save()
         meeting.updated_on = timezone.now()
         meeting.save()
+        report = MeetingReport.objects.get(meeting=meeting)
+
         return HttpResponseRedirect(request.path_info)
 
     return render(request, 'item.html', locals())
@@ -192,6 +224,7 @@ def items(request, meeting_number, id):
 def history(request, meeting_number, id):
     meeting = Meeting.objects.get(meeting_number=meeting_number)
     item = MeetingItem.objects.get(id=id)
+    statuses = MeetingItemStatus.objects.filter(meeting_item=item)
     return render(request, 'history.html', locals())
 
 

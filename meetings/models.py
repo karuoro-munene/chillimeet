@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 
@@ -8,11 +9,12 @@ meeting_types = (
     ("Project Team Leaders", "Project Team Leaders")
 )
 statuses = (
-    ("Open","Open"),
-    ("In Development","In Development"),
-    ("Awaiting Invoicing","Awaiting Invoices"),
-    ("Closed","Closed"),
+    ("Open", "Open"),
+    ("In Development", "In Development"),
+    ("Awaiting Invoicing", "Awaiting Invoices"),
+    ("Closed", "Closed"),
 )
+
 
 # Create your models here.
 class Staff(AbstractUser):
@@ -42,7 +44,10 @@ class MeetingItem(models.Model):
     count = models.IntegerField(null=True)
     label = models.CharField(null=True, max_length=100)
     due_date = models.CharField(null=True, max_length=100)
-    person_responsible = models.ForeignKey(Staff,on_delete=models.CASCADE, null=True, related_name='person_responsible')
+    person_responsible = models.ForeignKey(Staff, on_delete=models.CASCADE, null=True,
+                                           related_name='person_responsible')
+    comments = models.TextField(default="")
+    status = models.CharField(null=True, max_length=50)
     created_on = models.DateTimeField(default=timezone.now)
     updated_on = models.DateTimeField(default=timezone.now)
 
@@ -53,7 +58,7 @@ class MeetingItem(models.Model):
 class MeetingItemStatus(models.Model):
     meeting_item = models.ForeignKey(MeetingItem, on_delete=models.CASCADE, null=True, related_name='meeting_item')
     action = models.TextField()
-    status = models.CharField(max_length=100, choices=statuses,null=True)
+    status = models.CharField(max_length=100, choices=statuses, null=True)
     count = models.IntegerField(null=True)
     label = models.CharField(null=True, max_length=100)
     person_responsible = models.ForeignKey(Staff, on_delete=models.CASCADE, null=True, related_name='staff_responsible')
@@ -62,3 +67,11 @@ class MeetingItemStatus(models.Model):
 
     def __str__(self):
         return self.action
+
+
+class MeetingReport(models.Model):
+    meeting = models.OneToOneField(Meeting, on_delete=models.CASCADE, related_name='report_meeting')
+    meeting_items = models.ManyToManyField(MeetingItem)
+
+    def __str__(self):
+        return self.meeting
